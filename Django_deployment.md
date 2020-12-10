@@ -77,7 +77,7 @@ See which apps are registered with the firewall:
 ```
 to allow ssh ports run this:
 ```
-# ufw allow OpenSSH
+# ufw allow ssh
 ```
 but for a custom ssh port (e.g: 2222) run this:
 ```
@@ -222,7 +222,7 @@ Copy this code and paste into the file
 ```
 server {
     listen 80;
-    server_name YOUR_IP_OR_DOMAIN;
+    server_name YOUR_IP_OR_DOMAIN yourdomain.com www.yourdomain.com;
 
     location /static {
         alias /home/YOUR_USER/YOUR_PROJECT/static;
@@ -250,7 +250,7 @@ $ sudo nginx -t
 ```
 Remove port 8000 from firewall and open up our firewall to allow normal traffic on port 80
 ```
-$ sudo ufw allow http/tcp
+$ sudo ufw allow http
 $ sudo ufw delete allow 8000
 ```
 #### Max Upload file size
@@ -298,9 +298,42 @@ $ sudo supervisor reload
 $ sudo supervisor start django-web
 $ sudo systemctl restart nginx
 ```
+## SSL/TLS Certificate
 
+Edit /etc/nginx/sites-available/django-web
+```
+server {
+    listen: 80;
+    server_name example.com www.example.com;
+    ...
+}
+```
 
+#### Add SSL with LetsEncrypt
+```
+sudo add-apt-repository ppa:certbot/certbot
+sudo apt-get update
+sudo apt-get install python-certbot-nginx
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
 
-
+# Only valid for 90 days, test the renewal process with
+certbot renew --dry-run
+```
+#### Allow 443 port:
+```
+$ sudo ufw allow https
+```
+#### SSL Certificate Auto renewal
+```
+$ sudo crontab -e
+```
+append this line in it and save
+```
+0 0 1 */2 * sudo certbot renew --quiet
+```
+#### Restart Nginx
+```
+$ sudo systemctl restart nginx
+```
 
 

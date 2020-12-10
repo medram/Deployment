@@ -216,7 +216,7 @@ $ sudo rm /etc/nginx/sites-enabled/default
 ```
 Create project folder
 ```
-$ sudo nano /etc/nginx/sites-available/django_web
+$ sudo nano /etc/nginx/sites-available/django-web
 ```
 Copy this code and paste into the file
 ```
@@ -242,7 +242,7 @@ server {
 
 Enable the file by linking to the sites-enabled dir
 ```
-$ sudo ln -s /etc/nginx/sites-available/django_web /etc/nginx/sites-enabled
+$ sudo ln -s /etc/nginx/sites-available/django-web /etc/nginx/sites-enabled
 ```
 #### Test NGINX config
 ```
@@ -271,7 +271,7 @@ $ sudo apt install supervisor
 #### Configure Supervisor
 Adding config file
 ```
-$ sudo nano /etc/supervisor/conf.d/django_web.conf
+$ sudo nano /etc/supervisor/conf.d/django-web.conf
 ```
 Pasting this content and save the file:
 ```
@@ -289,13 +289,13 @@ stdout_logfile=/var/log/django-web/django-web.out.log
 then create some files:
 ```
 $ sudo mkdir -p /var/log/django_web
-$ sudo touch /var/log/django_web/django-web.err.log
-$ sudo touch /var/log/django_web/django-web.out.log
+$ sudo touch /var/log/django-web/django-web.err.log
+$ sudo touch /var/log/django-web/django-web.out.log
 ```
 #### Reload Supervisor & Nginx
 ```
 $ sudo supervisor reload
-$ sudo supervisor start django_web
+$ sudo supervisor start django-web
 $ sudo systemctl restart nginx
 ```
 

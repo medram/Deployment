@@ -2,7 +2,7 @@
 
 ## Server Security & Access
 ### Updating Packages:
-```sh
+```
 # apt update
 # apt upgrade
 ```
@@ -210,6 +210,10 @@ ctrl-c
 $ deactivate
 ```
 ### NGINX Setup
+Removing the default site
+```
+$ sudo rm /etc/nginx/sites-enabled/default
+```
 Create project folder
 ```
 $ sudo nano /etc/nginx/sites-available/django_web
@@ -249,14 +253,51 @@ Remove port 8000 from firewall and open up our firewall to allow normal traffic 
 $ sudo ufw allow http/tcp
 $ sudo ufw delete allow 8000
 ```
+#### Max Upload file size
+To change the max upload file size we should add this parameter `client_max_body_size 10M;` to this file `nginx.conf`:
+```
+$ sudo nano /etc/nginx/nginx.conf
+```
 #### Restart NGINX
 ```
 $ sudo systemctl restart nginx
 ```
-
-
-
-
+### Supervisor Setup
+To make sure that gunicorn up and running, need to use `supervisor` (or `systemd`)
+#### Install Supervisor
+```
+$ sudo apt install supervisor
+```
+#### Configure Supervisor
+Adding config file
+```
+$ sudo nano /etc/supervisor/conf.d/django_web.conf
+```
+Pasting this content and save the file:
+```
+[program:django-web]
+directory=/home/ubuntu/app
+command=/home/USER/my_app/venv/bin/gunicorn -w 3 app.wsgi
+user=ubuntu
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+stderr_logfile=/var/log/django-web/django-web.err.log
+stdout_logfile=/var/log/django-web/django-web.out.log
+```
+then create some files:
+```
+$ sudo mkdir -p /var/log/django_web
+$ sudo touch /var/log/django_web/django-web.err.log
+$ sudo touch /var/log/django_web/django-web.out.log
+```
+#### Reload Supervisor & Nginx
+```
+$ sudo supervisor reload
+$ sudo supervisor start django_web
+$ sudo systemctl restart nginx
+```
 
 
 

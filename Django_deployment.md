@@ -223,6 +223,7 @@ Copy this code and paste into the file
 server {
     listen 80;
     server_name YOUR_IP_OR_DOMAIN yourdomain.com www.yourdomain.com;
+    client_max_body_size 10M;
 
     location /static {
         alias /home/YOUR_USER/YOUR_PROJECT/static;
@@ -234,8 +235,17 @@ server {
     
     location / {
         proxy_pass http://localhost:8000;
-        include /etc/nginx/proxy_params;
         proxy_redirect off;
+        
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        
+        # include /etc/nginx/proxy_params;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $server_name;
     }
 }
 ```
